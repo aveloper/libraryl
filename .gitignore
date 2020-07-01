@@ -20,3 +20,6 @@ vendor/
 # ignore build
 build/
 libraryl
+
+# ignore environment files
+.env
