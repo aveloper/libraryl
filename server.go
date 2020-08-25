@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"libraryl/home"
 	"net/http"
 	"os"
 	"os/signal"
@@ -25,6 +26,7 @@ type Server struct {
 	httpHandler http.Handler
 	appConfig   *AppConfig
 	mongoClient *mongo.Client
+	mongoDB     *mongo.Database
 
 	killServer chan int
 	connClose  chan int
@@ -96,10 +98,14 @@ func (s *Server) connectMongoDB() {
 	}
 
 	log.Info("Connected to mongoDB")
+
+	s.mongoDB = s.mongoClient.Database(s.appConfig.MongoDBName)
 }
 
 func (s *Server) addRoutes() {
-	//s.router.HandleFunc("/")
+	s.router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
+	homeHandler := home.NewHandler()
+	home.AddRoute(s.router, homeHandler)
 }
 
 func (s *Server) addMiddleware() {

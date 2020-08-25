@@ -11,9 +11,9 @@ import (
 
 //AppConfig - Server Config Parameters
 type AppConfig struct {
-	PORT       int
-	MongoDBUri string
-
+	PORT        int
+	MongoDBUri  string
+	MongoDBName string
 	Environment string
 	Production  bool
 }
@@ -46,6 +46,7 @@ func readConfig() {
 	appConfig = &AppConfig{
 		PORT:        viper.GetInt("PORT"),
 		MongoDBUri:  viper.GetString("MONGO_DB_URI"),
+		MongoDBName: viper.GetString("MONGO_DB_NAME"),
 		Environment: env,
 		Production:  strings.EqualFold(env, "PRODUCTION"),
 	}
@@ -58,6 +59,9 @@ func verifyConfig() {
 	}
 	if appConfig.MongoDBUri == "" {
 		panic("MONGO_DB_URI is not set")
+	}
+	if appConfig.MongoDBName == "" {
+		panic("MONGO_DB_NAME is not specified")
 	}
 	if !appConfig.Production {
 		log.Info("Server running in DEVELOPMENT mode")
